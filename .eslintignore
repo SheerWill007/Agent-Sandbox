@@ -1,0 +1,22 @@
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Templates and scripts
+templates/
+minimal-rootfs/
+
+# Configuration files
+*.config.js
+*.config.mjs
+
+# Git
+.git/

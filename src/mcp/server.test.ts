@@ -417,4 +417,115 @@ describe("MCP Server Tools", () => {
       expect(textOf(result)).toContain("Session belongs to another owner");
     });
   });
+
+  describe("create_session", () => {
+    it("creates session and returns success message", async () => {
+      const result = await client.callTool({
+        name: "create_session",
+        arguments: { sessionId: "new-session" },
+      });
+
+      expect(textOf(result)).toContain("Session created: new-session");
+    });
+
+    it("accepts optional template parameter", async () => {
+      const result = await client.callTool({
+        name: "create_session",
+        arguments: { sessionId: "python-session", template: "python" },
+      });
+
+      expect(textOf(result)).toContain("Session created: python-session");
+      expect(textOf(result)).toContain("template: python");
+    });
+
+    it("handles session creation without explicit sessionId", async () => {
+      const result = await client.callTool({
+        name: "create_session",
+        arguments: {},
+      });
+
+      const text = textOf(result);
+      expect(text).toContain("Session created:");
+    });
+  });
+
+  describe("list_templates", () => {
+    it("returns available templates from template registry", async () => {
+      vi.mocked(sendSessionMessage).mockImplementation(
+        mockSendSession({
+          type: "response",
+          data: {
+            templates: [
+              { name: "node", displayName: "Node.js 22", tools: ["node", "npm"] },
+              { name: "python", displayName: "Python 3.12", tools: ["python3", "pip"] },
+            ],
+          },
+        }),
+      );
+
+      const result = await client.callTool({
+        name: "list_templates",
+        arguments: {},
+      });
+
+      const text = textOf(result);
+      expect(text).toContain("node");
+      expect(text).toContain("Node.js 22");
+      expect(text).toContain("python");
+      expect(text).toContain("Python 3.12");
+    });
+
+    it("handles empty template list gracefully", async () => {
+      vi.mocked(sendSessionMessage).mockImplementation(
+        mockSendSession({ type: "response", data: { templates: [] } }),
+      );
+
+      const result = await client.callTool({
+        name: "list_templates",
+        arguments: {},
+      });
+
+      expect(textOf(result)).toContain("No templates");
+    });
+  });
+
+  describe("ping", () => {
+    it("responds with pong message", async () => {
+      const result = await client.callTool({
+        name: "ping",
+        arguments: {},
+      });
+
+      expect(textOf(result)).toBe("pong");
+    });
+  });
+
+  describe("error handling", () => {
+    it("returns isError=true when gateway throws error", async () => {
+      vi.mocked(sendSessionMessage).mockRejectedValue(
+        new Error("Connection timeout"),
+      );
+
+      const result = await client.callTool({
+        name: "execute",
+        arguments: { sessionId: "s1", command: "echo" },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(textOf(result)).toContain("Connection timeout");
+    });
+
+    it("handles malformed gateway responses gracefully", async () => {
+      vi.mocked(sendSessionMessage).mockImplementation(
+        mockSendSession({ type: "response", data: null }),
+      );
+
+      const result = await client.callTool({
+        name: "read_file",
+        arguments: { sessionId: "s1", path: "test.txt" },
+      });
+
+      expect(textOf(result)).toBe("");
+    });
+  });
 });

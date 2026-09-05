@@ -1,0 +1,34 @@
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Templates and artifacts
+templates/
+minimal-rootfs/
+
+# Firecracker artifacts
+/var/lib/agent-sandbox/
+
+# Git
+.git/
