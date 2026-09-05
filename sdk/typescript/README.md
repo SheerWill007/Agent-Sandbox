@@ -1,6 +1,6 @@
 # @agent-sandbox/sdk
 
-> TypeScript/JavaScript client SDK for [Agent Sandbox](https://github.com/vivek1504/agent-sandbox) to run code in isolated Firecracker microVMs.
+> TypeScript/JavaScript client SDK for [Agent Sandbox](https://github.com/SheerWill007/Agent-Sandbox) to run code in isolated Firecracker microVMs.
 
 Uses native `fetch` (Node 18+, Deno, Bun, browsers).
 

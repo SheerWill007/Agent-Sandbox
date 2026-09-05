@@ -447,7 +447,7 @@ echo "net.ipv4.ip_forward = 1" | sudo tee /etc/sysctl.d/99-ip-forward.conf
 ### Install
 
 ```bash
-git clone https://github.com/vivek1504/agent-sandbox.git
+git clone https://github.com/SheerWill007/Agent-Sandbox.git
 cd agent-sandbox
 npm install
 ```
@@ -458,7 +458,7 @@ Download the guest kernel image:
 
 ```bash
 sudo mkdir -p /var/lib/agent-sandbox/artifacts
-wget https://github.com/vivek1504/agent-sandbox/releases/download/Beta/vmlinux
+wget https://github.com/SheerWill007/Agent-Sandbox/releases/download/Beta/vmlinux
 sudo mv vmlinux /var/lib/agent-sandbox/artifacts/
 sudo chown -R root:firecracker /var/lib/agent-sandbox/artifacts
 sudo chmod 750 /var/lib/agent-sandbox/artifacts
@@ -768,10 +768,10 @@ As an infrastructure project designed for deep isolation and sub-100ms startup t
 
 ## Author
 
-**Vivek Jadhav** - [github.com/vivek1504](https://github.com/vivek1504)
+**William Law** - [willx.tech](https://willx.tech)
 
 ---
 
 ## License
 
-[ISC](LICENSE) © 2026 Vivek Jadhav
+[ISC](LICENSE) © 2026 William Law

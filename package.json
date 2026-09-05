@@ -23,7 +23,7 @@
     "vsock",
     "kvm"
   ],
-  "author": "Vivek Jadhav",
+  "author": "William Law",
   "license": "ISC",
   "type": "module",
   "dependencies": {

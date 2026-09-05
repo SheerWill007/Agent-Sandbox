@@ -27,11 +27,11 @@
     "ai-agent",
     "isolation"
   ],
-  "author": "Vivek Jadhav",
+  "author": "William Law",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vivek1504/agent-sandbox.git",
+    "url": "https://github.com/SheerWill007/Agent-Sandbox.git",
     "directory": "sdk/typescript"
   },
   "engines": {
