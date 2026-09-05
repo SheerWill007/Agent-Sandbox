@@ -1,0 +1,48 @@
+import { app } from "./app.js";
+import { logger } from "./logger.js";
+import { ensureHostNetworkSetup, recoverUsedSlots } from "./vm/networking.js";
+import { sweepOrphanedResources } from "./vm/orphan-sweep.js";
+import { installShutdownHandler } from "./shutdown.js";
+import { vmResourceConfig } from "./metrics.js";
+import { loadResourceConfig } from "./vm/jailer.js";
+import { loadTemplateRegistry, listTemplates } from "./vm/templates.js";
+
+const PORT = process.env.PORT || 3000;
+
+try {
+  sweepOrphanedResources();
+  recoverUsedSlots();
+  ensureHostNetworkSetup();
+  loadTemplateRegistry();
+  const templates = listTemplates();
+  logger.info({ templates: templates.map(t => t.name) }, `${templates.length} template(s) loaded`);
+} catch (err) {
+  logger.warn({ err }, "host network or template registry setup check failed — VMs may not have internet access or custom templates");
+}
+
+try {
+  const config = loadResourceConfig();
+  vmResourceConfig.set({ resource: "vcpu_count" }, config.vcpuCount);
+  vmResourceConfig.set({ resource: "mem_size_mib" }, config.memSizeMib);
+  vmResourceConfig.set({ resource: "cpu_quota_us" }, config.cpuQuotaUs);
+  vmResourceConfig.set({ resource: "cpu_period_us" }, config.cpuPeriodUs);
+  vmResourceConfig.set({ resource: "memory_limit_bytes" }, config.memoryLimitBytes);
+  vmResourceConfig.set({ resource: "no_file_soft_limit" }, config.noFileSoftLimit);
+  vmResourceConfig.set({ resource: "pids_limit" }, config.pidsLimit);
+} catch (err) {
+  logger.warn({ err }, "failed to set vm resource metrics");
+}
+
+process.on("uncaughtException", (err) => {
+  logger.fatal({ err }, "uncaught exception — shutting down");
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.fatal({ err: reason }, "unhandled rejection");
+});
+
+const httpServer = app.listen(PORT, () => {
+  logger.info({ port: PORT }, `server listening on http://localhost:${PORT}`);
+});
+installShutdownHandler(httpServer);
