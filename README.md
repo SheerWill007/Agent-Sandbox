@@ -774,4 +774,4 @@ As an infrastructure project designed for deep isolation and sub-100ms startup t
 
 ## License
 
-[ISC](LICENSE) © 2026 William Law
+[AGPL](LICENSE) © 2026 William Law
