@@ -225,10 +225,14 @@ describe("auth middleware", () => {
       expect(req.apiKey?.scopes).toEqual(["exec"]);
       expect(req.apiKey?.rateLimit).toBe(100);
 
-      // Now verify it fails admin check
+      // Now verify it fails admin check with fresh response object
+      const adminRes = {
+        status: vi.fn().mockReturnThis(),
+        json: vi.fn(),
+      } as unknown as Response;
       const adminNext = vi.fn();
-      authMiddleware("admin")(req, res, adminNext);
-      expect(res.status).toHaveBeenCalledWith(403);
+      authMiddleware("admin")(req, adminRes, adminNext);
+      expect(adminRes.status).toHaveBeenCalledWith(403);
       expect(adminNext).not.toHaveBeenCalled();
     });
 

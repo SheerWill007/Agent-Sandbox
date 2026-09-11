@@ -340,7 +340,7 @@ describe("Template Registry", () => {
     });
 
     it("returns default template via getDefaultTemplate", () => {
-      // Add legacy node template
+      // Setup legacy node template first
       fs.writeFileSync(path.join(artifactsDir, "rootfs.ext4"), "fake rootfs");
       fs.writeFileSync(path.join(artifactsDir, "snapshot-exec"), "fake snapshot");
       fs.writeFileSync(path.join(artifactsDir, "mem-exec"), "fake mem");

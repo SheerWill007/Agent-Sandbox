@@ -161,8 +161,9 @@ export async function sendSessionMessage(
       result = await readVsockResponse(socket, timeout, onStream, id);
 
       if (message.type === "execute" && result.data["exitCode"] !== undefined) {
+        const cmd = (message as any).command;
         execProcessExitCode.inc({
-          command: String(message.command ?? "unknown"),
+          command: String(cmd ?? "unknown"),
           exit_code: String(result.data["exitCode"]),
         });
       } else if (message.type === "write_file" && result.data["bytesWritten"]) {

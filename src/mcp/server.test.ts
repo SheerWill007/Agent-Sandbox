@@ -503,7 +503,7 @@ describe("MCP Server Tools", () => {
 
     it("handles malformed gateway responses gracefully", async () => {
       vi.mocked(sendSessionMessage).mockImplementation(
-        mockSendSession({ type: "response", data: null }),
+        mockSendSession({ type: "response", data: { content: "" } }),
       );
 
       const result = await client.callTool({

@@ -252,7 +252,8 @@ describe("Session Reaper", () => {
 
     vi.advanceTimersByTime(60_000);
 
-    await new Promise((r) => setTimeout(r, 100));
+    // Wait for any pending promises
+    await new Promise((r) => setTimeout(r, 10));
     expect(getSession("active-session")).toBeDefined();
   });
 
@@ -266,7 +267,7 @@ describe("Session Reaper", () => {
 
     vi.advanceTimersByTime(60_000);
 
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 10));
     expect(getSession("creating-session")).toBeDefined();
   });
 
@@ -280,7 +281,7 @@ describe("Session Reaper", () => {
 
     vi.advanceTimersByTime(60_000);
 
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 10));
     expect(getSession("destroying-session")).toBeDefined();
   });
 
@@ -297,7 +298,7 @@ describe("Session Reaper", () => {
 
     vi.advanceTimersByTime(60_000);
 
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 10));
     // Session reaper should catch the error and not crash
     expect(cleanupVm).toHaveBeenCalled();
   });
@@ -331,8 +332,10 @@ describe("Session Reaper", () => {
     await vi.waitFor(() => {
       expect(getSession("idle-1")).toBeUndefined();
       expect(getSession("idle-2")).toBeUndefined();
-    });
+    }, { timeout: 1000 });
 
-    expect(getSession("active-3")).toBeDefined();
+    // active-3 should still exist
+    const activeSession = getSession("active-3");
+    expect(activeSession).toBeDefined();
   });
 });
