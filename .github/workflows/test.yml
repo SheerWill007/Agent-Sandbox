@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18, 20, 22]
+        node-version: [20, 22]  # Removed Node 18 due to vitest compatibility
     steps:
       - uses: actions/checkout@v4
       

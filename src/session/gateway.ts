@@ -162,7 +162,7 @@ export async function sendSessionMessage(
 
       if (message.type === "execute" && result.data["exitCode"] !== undefined) {
         execProcessExitCode.inc({
-          command: String(message.command),
+          command: String(message.command ?? "unknown"),
           exit_code: String(result.data["exitCode"]),
         });
       } else if (message.type === "write_file" && result.data["bytesWritten"]) {
@@ -176,8 +176,8 @@ export async function sendSessionMessage(
     } finally {
       const duration =
         Number(process.hrtime.bigint() - startTime) / 1_000_000_000;
-      execMessageDurationSeconds.observe({ type: message.type }, duration);
-      execMessageTotal.inc({ type: message.type, status });
+      execMessageDurationSeconds.observe({ type: String(message.type) }, duration);
+      execMessageTotal.inc({ type: String(message.type), status });
     }
   } finally {
     releaseLock();

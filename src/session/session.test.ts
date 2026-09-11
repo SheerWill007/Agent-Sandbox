@@ -184,7 +184,7 @@ describe("Session State Machine & Lifecycle", () => {
     await destroySession("metrics-test");
 
     expect(execSessionDurationSeconds.observe).toHaveBeenCalled();
-    const observedDuration = vi.mocked(execSessionDurationSeconds.observe).mock.calls[0][0];
+    const observedDuration = vi.mocked(execSessionDurationSeconds.observe).mock.calls[0]?.[0];
     expect(observedDuration).toBeGreaterThan(0);
   });
 

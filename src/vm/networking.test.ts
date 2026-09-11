@@ -279,14 +279,19 @@ describe("Edge Cases and Error Handling", () => {
 
   it("maintains slot consistency across multiple allocations", () => {
     const firstBatch = [allocateSlot(), allocateSlot(), allocateSlot()];
-    releaseSlot(firstBatch[1]); // Release middle slot
+    const middleSlot = firstBatch[1];
+    if (middleSlot === undefined) throw new Error("Middle slot undefined");
+    
+    releaseSlot(middleSlot); // Release middle slot
 
     const newSlot = allocateSlot();
-    expect(newSlot).toBe(firstBatch[1]); // Should reuse freed slot
+    expect(newSlot).toBe(middleSlot); // Should reuse freed slot
 
     // Clean up
-    releaseSlot(firstBatch[0]);
-    releaseSlot(firstBatch[2]);
+    const firstSlot = firstBatch[0];
+    const lastSlot = firstBatch[2];
+    if (firstSlot !== undefined) releaseSlot(firstSlot);
+    if (lastSlot !== undefined) releaseSlot(lastSlot);
     releaseSlot(newSlot);
   });
 

@@ -21,18 +21,6 @@ export const JAIL_BASE_DIR =
 export const ARTIFACTS_DIR =
   process.env.FIRECRACKER_ARTIFACTS_DIR ?? "/var/lib/agent-sandbox/artifacts";
 
-Object.defineProperty(exports, "JAIL_BASE_DIR", {
-  get: () => _jailerDirs.JAIL_BASE_DIR,
-  enumerable: true,
-  configurable: true,
-});
-
-Object.defineProperty(exports, "ARTIFACTS_DIR", {
-  get: () => _jailerDirs.ARTIFACTS_DIR,
-  enumerable: true,
-  configurable: true,
-});
-
 export const FIRECRACKER_UID = parseId(
   process.env.FIRECRACKER_UID ?? "997",
   "FIRECRACKER_UID",

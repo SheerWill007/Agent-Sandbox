@@ -132,7 +132,11 @@ execRouter.post("/:sessionId/execute", async (req, res) => {
       sessionId,
       { type: "execute", command, args, cwd, env, timeout: execTimeout },
       (chunk) => {
-        output.push({ stream: chunk.stream, data: chunk.data, ts: Date.now() });
+        output.push({ 
+          stream: chunk.stream as string, 
+          data: chunk.data as string, 
+          ts: Date.now() 
+        });
       },
       execTimeout,
       template,
