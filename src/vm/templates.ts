@@ -1,7 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { ARTIFACTS_DIR } from "./jailer.js";
 import { vmLogger } from "../logger.js";
+
+// Read lazily so tests can override via vi.stubEnv("FIRECRACKER_ARTIFACTS_DIR", ...)
+function getArtifactsDir(): string {
+  return process.env.FIRECRACKER_ARTIFACTS_DIR ?? "/var/lib/agent-sandbox/artifacts";
+}
 
 export interface TemplateManifest {
   name: string;
@@ -52,7 +56,8 @@ export function resolveTemplateName(input?: string): string {
 }
 
 export function loadTemplateRegistry(): void {
-  const templatesDir = path.join(ARTIFACTS_DIR, "templates");
+  templates.clear();
+  const templatesDir = path.join(getArtifactsDir(), "templates");
 
   if (!fs.existsSync(templatesDir)) {
     registerLegacyTemplate();
@@ -108,9 +113,10 @@ function registerTemplate(templateDir: string): void {
 }
 
 function registerLegacyTemplate(): void {
-  const rootfsPath = path.join(ARTIFACTS_DIR, "rootfs.ext4");
-  const snapshotPath = path.join(ARTIFACTS_DIR, "snapshot-exec");
-  const memoryPath = path.join(ARTIFACTS_DIR, "mem-exec");
+  const artifactsDir = getArtifactsDir();
+  const rootfsPath = path.join(artifactsDir, "rootfs.ext4");
+  const snapshotPath = path.join(artifactsDir, "snapshot-exec");
+  const memoryPath = path.join(artifactsDir, "mem-exec");
 
   for (const f of [rootfsPath, snapshotPath, memoryPath]) {
     if (!fs.existsSync(f)) {

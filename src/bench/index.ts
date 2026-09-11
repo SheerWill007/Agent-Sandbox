@@ -11,6 +11,8 @@ import { runGatewaySuite } from "./suites/gateway.js";
 import { runCleanupSuite } from "./suites/cleanup.js";
 import { runTemplateSuite } from "./suites/template.js";
 
+/* eslint-disable no-console */
+
 export interface BenchOptions {
   suite: string;
   iterations: number;
@@ -70,7 +72,7 @@ async function main() {
   try {
     // Initialize host networking and template registry
     try {
-      ensureHostNetworkSetup();
+      await ensureHostNetworkSetup();
     } catch {}
     loadTemplateRegistry();
 
@@ -91,9 +93,10 @@ async function main() {
         suites.push(suite);
 
         process.stdout.write(`${c.bold}${c.brightWhite}✔${c.reset} ${c.gray}(${elapsedSec}s)${c.reset}\n`);
-      } catch (err: any) {
+      } catch (err: unknown) {
         hasError = true;
-        const msg = err?.response?.data?.fault_message || err?.message || String(err);
+        const e = err as { response?: { data?: { fault_message?: string } }; message?: string };
+        const msg = e?.response?.data?.fault_message ?? e?.message ?? String(err);
 
         process.stdout.write(`${c.red}${c.bold}✘ Failed${c.reset}\n`);
         console.error(`\n${c.red}[!] Suite "${name}" failed:${c.reset} ${msg}`);

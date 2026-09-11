@@ -12,10 +12,12 @@ const PORT = process.env.PORT || 3000;
 try {
   sweepOrphanedResources();
   recoverUsedSlots();
-  ensureHostNetworkSetup();
   loadTemplateRegistry();
   const templates = listTemplates();
   logger.info({ templates: templates.map(t => t.name) }, `${templates.length} template(s) loaded`);
+  ensureHostNetworkSetup().catch((err: unknown) => {
+    logger.warn({ err }, "host network setup check failed — VMs may not have internet access");
+  });
 } catch (err) {
   logger.warn({ err }, "host network or template registry setup check failed — VMs may not have internet access or custom templates");
 }

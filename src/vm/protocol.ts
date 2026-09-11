@@ -5,9 +5,9 @@ import { vsockErrors } from "../metrics.js";
 export function readVsockResponse(
   socket: Socket,
   timeout: number,
-  onStreamChunk?: (chunk: any) => void,
+  onStreamChunk?: (chunk: Record<string, unknown>) => void,
   expectedId?: string,
-): Promise<{ type: string; data: any; error?: string }> {
+): Promise<{ type: string; data: Record<string, unknown>; error?: string }> {
   return new Promise((resolve, reject) => {
     let buffer = "";
 

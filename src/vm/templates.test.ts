@@ -9,7 +9,6 @@ import {
   loadTemplateRegistry,
   getDefaultTemplate,
 } from "./templates.js";
-import * as jailer from "./jailer.js";
 
 vi.mock("../logger.js", () => ({
   vmLogger: {
@@ -27,11 +26,12 @@ describe("Template Registry", () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "template-test-"));
     artifactsDir = path.join(tmpDir, "artifacts");
     fs.mkdirSync(artifactsDir, { recursive: true });
-    vi.spyOn(jailer, "ARTIFACTS_DIR", "get").mockReturnValue(artifactsDir);
+    vi.stubEnv("FIRECRACKER_ARTIFACTS_DIR", artifactsDir);
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -357,8 +357,8 @@ describe("Template Registry", () => {
       // Clear registry by loading without any templates
       const emptyDir = path.join(tmpDir, "empty");
       fs.mkdirSync(emptyDir);
-      vi.spyOn(jailer, "ARTIFACTS_DIR", "get").mockReturnValue(emptyDir);
-      
+      vi.stubEnv("FIRECRACKER_ARTIFACTS_DIR", emptyDir);
+
       loadTemplateRegistry();
 
       expect(() => getDefaultTemplate()).toThrow(/Default template "node" not found/);

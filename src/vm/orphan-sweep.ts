@@ -2,14 +2,18 @@ import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { vmLogger } from "../logger.js";
-import { loadManifest, clearManifest } from "../session/manifest.js";
-import { JAIL_BASE_DIR } from "./jailer.js";
+import { type ManifestEntry, loadManifest, clearManifest } from "../session/manifest.js";
 import { cleanupStaleNetworkResources } from "./networking.js";
+
+// Read lazily so tests can override via vi.stubEnv("FIRECRACKER_JAIL_BASE", ...)
+function getJailBaseDir(): string {
+  return process.env.FIRECRACKER_JAIL_BASE ?? "/var/lib/agent-sandbox/jailer";
+}
 
 export function sweepOrphanedResources(): void {
   vmLogger.info("starting orphan resource sweep");
 
-  let staleEntries: any[] = [];
+  let staleEntries: ManifestEntry[] = [];
   try {
     staleEntries = loadManifest();
   } catch (err) {
@@ -80,8 +84,9 @@ export function killOrphanedProcesses(name: string, allowedPids?: Set<number>): 
       try {
         process.kill(pid, "SIGKILL");
         vmLogger.info({ pid, process: name }, "killed orphaned process");
-      } catch (err: any) {
-        if (err?.code === "ESRCH") {
+      } catch (err: unknown) {
+        const e = err as { code?: string };
+        if (e?.code === "ESRCH") {
           vmLogger.debug({ pid, process: name }, "could not kill process (may have already exited)");
         } else {
           vmLogger.warn({ pid, process: name, err }, "failed to kill orphaned process");
@@ -94,8 +99,7 @@ export function killOrphanedProcesses(name: string, allowedPids?: Set<number>): 
 }
 
 export function sweepJailDirectories(allowedJails?: Set<string>): void {
-  const jailParent = path.join(JAIL_BASE_DIR, "firecracker");
-  if (!fs.existsSync(jailParent)) return;
+  const jailParent = path.join(getJailBaseDir(), "firecracker");  if (!fs.existsSync(jailParent)) return;
 
   try {
     const dirs = fs.readdirSync(jailParent);

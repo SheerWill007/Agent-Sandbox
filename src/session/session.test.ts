@@ -34,6 +34,7 @@ import {
   destroySession,
   getAllSessions,
   startSessionReaper,
+  _clearSessionsForTesting,
 } from "./session.js";
 import { cleanupVm } from "../vm/cleanup.js";
 import { removeEntry } from "./manifest.js";
@@ -41,7 +42,12 @@ import { execSessionsActive, execSessionDurationSeconds } from "../metrics.js";
 
 describe("Session State Machine & Lifecycle", () => {
   beforeEach(() => {
+    _clearSessionsForTesting();
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    _clearSessionsForTesting();
   });
 
   it("creates and retrieves a session", () => {
@@ -212,9 +218,11 @@ describe("Session Reaper", () => {
       clearInterval(intervalId);
     }
     vi.clearAllTimers();
+    _clearSessionsForTesting();
   });
 
   beforeEach(() => {
+    _clearSessionsForTesting();
     vi.useFakeTimers();
     vi.clearAllMocks();
   });

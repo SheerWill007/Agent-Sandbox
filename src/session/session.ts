@@ -48,8 +48,7 @@ export async function destroySession(sessionId: string, ownerId?: string): Promi
   if (!session) return false;
 
   if (session.ownerId && ownerId && session.ownerId !== ownerId) {
-    const err = new Error("Session belongs to another owner");
-    (err as any).statusCode = 403;
+    const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
     throw err;
   }
 
@@ -72,6 +71,11 @@ export async function destroySession(sessionId: string, ownerId?: string): Promi
 
 export function getAllSessions(): Session[] {
   return [...sessions.values()];
+}
+
+/** @internal For use in tests only — clears all session state */
+export function _clearSessionsForTesting(): void {
+  sessions.clear();
 }
 
 export function startSessionReaper(ttlMs: number = 30 * 60 * 1000): void {

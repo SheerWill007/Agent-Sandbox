@@ -15,6 +15,13 @@ import { type VmResourceConfig, loadResourceConfig } from "../vm/jailer.js";
 import { type EgressPolicy, loadEgressPolicy } from "../vm/egress-policy.js";
 import { addEntry } from "./manifest.js";
 
+export interface GatewayResponse {
+  type: string;
+  data: Record<string, unknown>;
+  error?: string;
+  messageId: string;
+}
+
 const sessionLocks = new Map<string, Promise<void>>();
 
 export async function acquireSessionLock(sessionId: string): Promise<() => void> {
@@ -45,8 +52,7 @@ export async function ensureSession(
   const existing = getSession(sessionId);
   if (existing) {
     if (existing.ownerId && ownerId && existing.ownerId !== ownerId) {
-      const err = new Error("Session belongs to another owner");
-      (err as any).statusCode = 403;
+      const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
       throw err;
     }
     if (existing.vm && existing.vm.state !== "dead" && !existing.vm.cleaned) {
@@ -63,8 +69,7 @@ export async function ensureSession(
     let session = getSession(sessionId);
     if (session) {
       if (session.ownerId && ownerId && session.ownerId !== ownerId) {
-        const err = new Error("Session belongs to another owner");
-        (err as any).statusCode = 403;
+        const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
         throw err;
       }
     } else {
@@ -123,12 +128,12 @@ export async function ensureSession(
 
 export async function sendSessionMessage(
   sessionId: string,
-  message: Record<string, any>,
-  onStream?: (chunk: any) => void,
+  message: Record<string, unknown>,
+  onStream?: (chunk: Record<string, unknown>) => void,
   timeout: number = 60000,
   templateName?: string,
   ownerId?: string,
-): Promise<any> {
+): Promise<GatewayResponse> {
   touchSession(sessionId);
   const vm = await ensureSession(sessionId, templateName, ownerId);
   touchSession(sessionId);
@@ -155,16 +160,16 @@ export async function sendSessionMessage(
     try {
       result = await readVsockResponse(socket, timeout, onStream, id);
 
-      if (message.type === "execute" && result.data?.exitCode !== undefined) {
+      if (message.type === "execute" && result.data["exitCode"] !== undefined) {
         execProcessExitCode.inc({
-          command: message.command,
-          exit_code: result.data.exitCode.toString(),
+          command: String(message.command),
+          exit_code: String(result.data["exitCode"]),
         });
-      } else if (message.type === "write_file" && result.data?.bytesWritten) {
-        execWorkspaceBytesWritten.inc(result.data.bytesWritten);
+      } else if (message.type === "write_file" && result.data["bytesWritten"]) {
+        execWorkspaceBytesWritten.inc(Number(result.data["bytesWritten"]));
       }
 
-      return { ...result, messageId: id };
+      return { ...result, messageId: String(id) };
     } catch (err) {
       status = "error";
       throw err;
