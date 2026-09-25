@@ -5,7 +5,7 @@ import { listTemplates } from "../vm/templates.js";
 
 const SAFE_SESSION_ID_REGEX = /^[A-Za-z0-9_-]+$/;
 
-function validateSessionId(sessionId: string, res: import("express").Response): boolean {
+function validateSessionId(sessionId: string, res: any): boolean {
   if (!sessionId || !SAFE_SESSION_ID_REGEX.test(sessionId)) {
     res.status(400).json({ error: "Invalid sessionId: must contain only alphanumeric characters, dashes, or underscores" });
     return false;
@@ -13,14 +13,9 @@ function validateSessionId(sessionId: string, res: import("express").Response): 
   return true;
 }
 
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
-}
-
-function mapErrorToStatus(err: unknown): number {
-  const e = err as { statusCode?: number; message?: string };
-  if (e?.statusCode) return e.statusCode;
-  const msg = e?.message ?? "";
+function mapErrorToStatus(err: any): number {
+  if (err?.statusCode) return err.statusCode;
+  const msg = err?.message || "";
   if (msg.includes("belongs to another") || msg.includes("Forbidden")) return 403;
   if (msg.includes("Path traversal") || msg.includes("Invalid")) return 400;
   if (msg.includes("not found") || msg.includes("Unknown template")) return 404;
@@ -118,8 +113,8 @@ execRouter.post("/:sessionId/execute", async (req, res) => {
 
       res.write(JSON.stringify({ type: "result", ...result.data }) + "\n");
       res.end();
-    } catch (err: unknown) {
-      res.write(JSON.stringify({ type: "error", error: errorMessage(err) }) + "\n");
+    } catch (err: any) {
+      res.write(JSON.stringify({ type: "error", error: err.message }) + "\n");
       res.end();
     }
     return;
@@ -132,11 +127,7 @@ execRouter.post("/:sessionId/execute", async (req, res) => {
       sessionId,
       { type: "execute", command, args, cwd, env, timeout: execTimeout },
       (chunk) => {
-        output.push({ 
-          stream: chunk.stream as string, 
-          data: chunk.data as string, 
-          ts: Date.now() 
-        });
+        output.push({ stream: chunk.stream, data: chunk.data, ts: Date.now() });
       },
       execTimeout,
       template,
@@ -149,8 +140,8 @@ execRouter.post("/:sessionId/execute", async (req, res) => {
       duration: result.data?.duration,
       output,
     });
-  } catch (err: unknown) {
-    res.status(mapErrorToStatus(err)).json({ error: errorMessage(err) });
+  } catch (err: any) {
+    res.status(mapErrorToStatus(err)).json({ error: err.message });
   }
 });
 
@@ -182,8 +173,8 @@ execRouter.post("/:sessionId/write", async (req, res) => {
       req.apiKey?.id,
     );
     res.json(result.data);
-  } catch (err: unknown) {
-    res.status(mapErrorToStatus(err)).json({ error: errorMessage(err) });
+  } catch (err: any) {
+    res.status(mapErrorToStatus(err)).json({ error: err.message });
   }
 });
 
@@ -212,10 +203,10 @@ execRouter.get("/:sessionId/read", async (req, res) => {
     const data = result.data;
     res.json({
       ...data,
-      content: Buffer.from(String(data["content"] ?? ""), "base64").toString("utf8"),
+      content: Buffer.from(data.content, "base64").toString("utf8"),
     });
-  } catch (err: unknown) {
-    res.status(mapErrorToStatus(err)).json({ error: errorMessage(err) });
+  } catch (err: any) {
+    res.status(mapErrorToStatus(err)).json({ error: err.message });
   }
 });
 
@@ -238,8 +229,8 @@ execRouter.get("/:sessionId/files", async (req, res) => {
       req.apiKey?.id,
     );
     res.json(result.data);
-  } catch (err: unknown) {
-    res.status(mapErrorToStatus(err)).json({ error: errorMessage(err) });
+  } catch (err: any) {
+    res.status(mapErrorToStatus(err)).json({ error: err.message });
   }
 });
 
@@ -251,8 +242,8 @@ execRouter.delete("/:sessionId", async (req, res) => {
     const ownerId = req.apiKey?.scopes.includes("admin") ? undefined : req.apiKey?.id;
     const destroyed = ownerId ? await destroySession(sessionId, ownerId) : await destroySession(sessionId);
     res.json({ destroyed });
-  } catch (err: unknown) {
-    res.status(mapErrorToStatus(err)).json({ error: errorMessage(err) });
+  } catch (err: any) {
+    res.status(mapErrorToStatus(err)).json({ error: err.message });
   }
 });
 

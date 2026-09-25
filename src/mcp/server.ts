@@ -14,23 +14,23 @@ export function createMcpServer(ownerId?: string): McpServer {
     "create_session",
     "Create a new session",
     {
-      sessionId: z
-        .string()
-        .optional()
-        .describe("Optional session identifier (auto-generated if not provided)"),
       template: z
         .string()
         .optional()
         .describe("Environment template (e.g., node, python, go)"),
     },
-    ({ sessionId, template }) => {
-      const id = sessionId ?? crypto.randomUUID();
+    ({ template }) => {
+      const sessionId = crypto.randomUUID();
 
       return {
         content: [
           {
             type: "text",
-            text: `Session created: ${id}${template ? `, template: ${template}` : ""}`,
+            text: JSON.stringify({
+              sessionId,
+              template: template ?? "node",
+              status: "active",
+            }),
           },
         ],
       };
@@ -67,14 +67,14 @@ export function createMcpServer(ownerId?: string): McpServer {
         sessionId,
         { type: "execute", command, args, cwd, timeout },
         (chunk) => {
-          parts.push(`[${String(chunk["stream"])}] ${String(chunk["data"])}`);
+          parts.push(`[${chunk.stream}] ${chunk.data}`);
         },
         60000,
         template,
         ownerId,
       );
 
-      const exitCode = (result.data["exitCode"] as number | undefined) ?? -1;
+      const exitCode = result.data?.exitCode ?? -1;
       parts.push(`\n--- exit code: ${exitCode} ---`);
 
       return {
@@ -125,7 +125,7 @@ export function createMcpServer(ownerId?: string): McpServer {
         content: [
           {
             type: "text",
-            text: `Wrote ${String(result.data["bytesWritten"])} bytes to ${path}`,
+            text: `Wrote ${result.data?.bytesWritten} bytes to ${path}`,
           },
         ],
       };
@@ -149,7 +149,7 @@ export function createMcpServer(ownerId?: string): McpServer {
         ownerId,
       );
       const content = Buffer.from(
-        String(result.data["content"] ?? ""),
+        result.data?.content || "",
         "base64",
       ).toString("utf-8");
       return {
@@ -178,9 +178,9 @@ export function createMcpServer(ownerId?: string): McpServer {
         undefined,
         ownerId,
       );
-      const listing = ((result.data["files"] as { type: string; path: string; size: number }[] | undefined) || [])
+      const listing = (result.data?.files || [])
         .map(
-          (f: { type: string; path: string; size: number }) =>
+          (f: any) =>
             `${f.type === "dir" ? "📁" : "📄"} ${f.path} (${f.size}b)`,
         )
         .join("\n");
@@ -219,12 +219,12 @@ export function createMcpServer(ownerId?: string): McpServer {
             },
           ],
         };
-      } catch (err: unknown) {
+      } catch (err: any) {
         return {
           content: [
             {
               type: "text",
-              text: `Failed to destroy session: ${err instanceof Error ? err.message : String(err)}`,
+              text: `Failed to destroy session: ${err.message}`,
             },
           ],
           isError: true,

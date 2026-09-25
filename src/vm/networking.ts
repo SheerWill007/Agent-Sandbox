@@ -577,7 +577,7 @@ export function cleanupStaleNetworkResources(targetNamespaces?: Set<string>): vo
   }
 }
 
-export async function ensureHostNetworkSetup(): Promise<void> {
+export function ensureHostNetworkSetup(): void {
   vmLogger.info("verifying host network prerequisites");
 
   cleanupStaleNetworkResources();
@@ -593,7 +593,7 @@ export async function ensureHostNetworkSetup(): Promise<void> {
   if (!match) {
     throw new Error("Could not detect internet-facing interface");
   }
-  const iface = match[1]!;
+  const iface = match[1];
 
   vmLogger.info({ internetInterface: iface }, "host network prerequisites OK");
 
@@ -602,7 +602,7 @@ export async function ensureHostNetworkSetup(): Promise<void> {
       encoding: "utf-8",
     });
     if (!existing.includes("-s 10.0.0.0/16")) {
-      await run(
+      run(
         `iptables -t nat -A POSTROUTING -s 10.0.0.0/16 -o ${iface} -j MASQUERADE`,
         "add host NAT for VM veth subnets",
       );
@@ -614,25 +614,25 @@ export async function ensureHostNetworkSetup(): Promise<void> {
   try {
     const existing = execSync("iptables -S FORWARD", { encoding: "utf-8" });
     if (!existing.includes("-s 10.0.0.0/16 -j ACCEPT")) {
-      await run(
+      run(
         `iptables -I FORWARD -s 10.0.0.0/16 -j ACCEPT`,
         "add host FORWARD for VM subnets (outbound)",
       );
     }
     if (!existing.includes("-d 10.0.0.0/16")) {
-      await run(
+      run(
         `iptables -I FORWARD -d 10.0.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT`,
         "add host FORWARD for VM subnets (return)",
       );
     }
     if (!existing.includes("-s 10.0.0.0/16 -d 10.0.0.0/16 -j DROP")) {
-      await run(
+      run(
         `iptables -I FORWARD -s 10.0.0.0/16 -d 10.0.0.0/16 -j DROP`,
         "isolate VMs from each other (host-level inter-VM drop)",
       );
     }
     if (!existing.includes("169.254.169.254")) {
-      await run(
+      run(
         `iptables -I FORWARD -s 10.0.0.0/16 -d 169.254.169.254/32 -j DROP`,
         "block cloud metadata from VMs (host-level)",
       );
@@ -644,7 +644,7 @@ export async function ensureHostNetworkSetup(): Promise<void> {
   try {
     const existingInput = execSync("iptables -S INPUT", { encoding: "utf-8" });
     if (!existingInput.includes("-s 10.0.0.0/16 -j DROP")) {
-      await run(
+      run(
         `iptables -I INPUT -s 10.0.0.0/16 -j DROP`,
         "block VMs from accessing host services (host-level INPUT)",
       );

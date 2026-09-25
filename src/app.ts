@@ -63,7 +63,7 @@ app.get("/ready", (_req, res) => {
 });
 
 // JSON parse error & payload too large handler
-app.use((err: { type?: string; body?: unknown } & Error, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (err?.type === "entity.too.large") {
     res.status(413).json({ error: "Payload too large. Maximum size is 10MB." });
     return;

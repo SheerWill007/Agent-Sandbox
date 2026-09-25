@@ -51,8 +51,8 @@ export async function createVm(
 
 ): Promise<Vm> {
   const instanceId = crypto.randomBytes(4).toString("hex");
-  const resolveName = resolveTemplateName(templateName);
-  const template = getTemplate(resolveName)!;
+  const resolveName = resolveTemplateName(templateName)
+  const template = getTemplate(resolveName)!
 
   const mergedResources = {
     ...resources,
@@ -236,7 +236,7 @@ export function createFcClient(apiSock: string) {
 }
 
 export async function restoreVm(
-  client: ReturnType<typeof createFcClient>,
+  client: any,
   jail: JailPaths,
 ) {
   vmLogger.debug(

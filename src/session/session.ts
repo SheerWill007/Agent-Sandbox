@@ -6,6 +6,7 @@ import {
   execSessionDurationSeconds,
 } from "../metrics.js";
 import { removeEntry } from "./manifest.js";
+import { assertOwnership } from "../auth/ownership.js";
 
 export interface Session {
   sessionId: string;
@@ -47,10 +48,7 @@ export async function destroySession(sessionId: string, ownerId?: string): Promi
   const session = sessions.get(sessionId);
   if (!session) return false;
 
-  if (session.ownerId && ownerId && session.ownerId !== ownerId) {
-    const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
-    throw err;
-  }
+  assertOwnership(session, ownerId);
 
   session.state = "destroying";
 
@@ -71,11 +69,6 @@ export async function destroySession(sessionId: string, ownerId?: string): Promi
 
 export function getAllSessions(): Session[] {
   return [...sessions.values()];
-}
-
-/** @internal For use in tests only — clears all session state */
-export function _clearSessionsForTesting(): void {
-  sessions.clear();
 }
 
 export function startSessionReaper(ttlMs: number = 30 * 60 * 1000): void {

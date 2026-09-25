@@ -25,19 +25,12 @@ vi.mock("../vm/protocol.js", () => ({
   buildPayload: vi.fn(),
 }));
 
-vi.mock("./manifest.js", () => ({
-  addEntry: vi.fn(),
-  removeEntry: vi.fn(),
-  loadManifest: vi.fn(() => []),
-  clearManifest: vi.fn(),
-}));
-
 import { ensureSession, sendSessionMessage } from "./gateway.js";
 import { createVm } from "../vm/vm-manager.js";
 import { getVmSocket } from "../vm/transport.js";
 import { readVsockResponse } from "../vm/protocol.js";
 import * as sessionModule from "./session.js";
-import { getSession, createSession, _clearSessionsForTesting } from "./session.js";
+import { getSession, createSession } from "./session.js";
 import { loadResourceConfig } from "../vm/jailer.js";
 import { loadEgressPolicy } from "../vm/egress-policy.js";
 
@@ -65,7 +58,6 @@ function prePopulateSession(sessionId: string) {
 
 describe("ensureSession", () => {
   beforeEach(() => {
-    _clearSessionsForTesting();
     vi.clearAllMocks();
   });
 
@@ -135,7 +127,6 @@ describe("ensureSession", () => {
 
 describe("sendSessionMessage", () => {
   beforeEach(() => {
-    _clearSessionsForTesting();
     vi.clearAllMocks();
   });
 

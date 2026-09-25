@@ -7,8 +7,6 @@ import {
   type Scope,
 } from "./key-store.js";
 
-/* eslint-disable no-console */
-
 function printHelp(): void {
   console.log(`
 Agent Sandbox Key Management CLI

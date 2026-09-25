@@ -14,13 +14,7 @@ import { createVm, type Vm } from "../vm/vm-manager.js";
 import { type VmResourceConfig, loadResourceConfig } from "../vm/jailer.js";
 import { type EgressPolicy, loadEgressPolicy } from "../vm/egress-policy.js";
 import { addEntry } from "./manifest.js";
-
-export interface GatewayResponse {
-  type: string;
-  data: Record<string, unknown>;
-  error?: string;
-  messageId: string;
-}
+import { assertOwnership } from "../auth/ownership.js";
 
 const sessionLocks = new Map<string, Promise<void>>();
 
@@ -51,10 +45,7 @@ export async function ensureSession(
   // Fast path: if session already exists, check ownership and reuse active VM or existing creation promise
   const existing = getSession(sessionId);
   if (existing) {
-    if (existing.ownerId && ownerId && existing.ownerId !== ownerId) {
-      const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
-      throw err;
-    }
+    assertOwnership(existing, ownerId);
     if (existing.vm && existing.vm.state !== "dead" && !existing.vm.cleaned) {
       return existing.vm;
     }
@@ -68,10 +59,7 @@ export async function ensureSession(
   try {
     let session = getSession(sessionId);
     if (session) {
-      if (session.ownerId && ownerId && session.ownerId !== ownerId) {
-        const err = Object.assign(new Error("Session belongs to another owner"), { statusCode: 403 });
-        throw err;
-      }
+      assertOwnership(session, ownerId);
     } else {
       session = createSession(sessionId, templateName, ownerId);
     }
@@ -128,12 +116,12 @@ export async function ensureSession(
 
 export async function sendSessionMessage(
   sessionId: string,
-  message: Record<string, unknown>,
-  onStream?: (chunk: Record<string, unknown>) => void,
+  message: Record<string, any>,
+  onStream?: (chunk: any) => void,
   timeout: number = 60000,
   templateName?: string,
   ownerId?: string,
-): Promise<GatewayResponse> {
+): Promise<any> {
   touchSession(sessionId);
   const vm = await ensureSession(sessionId, templateName, ownerId);
   touchSession(sessionId);
@@ -160,25 +148,30 @@ export async function sendSessionMessage(
     try {
       result = await readVsockResponse(socket, timeout, onStream, id);
 
-      if (message.type === "execute" && result.data["exitCode"] !== undefined) {
-        const cmd = (message as any).command;
-        execProcessExitCode.inc({
-          command: String(cmd ?? "unknown"),
-          exit_code: String(result.data["exitCode"]),
-        });
-      } else if (message.type === "write_file" && result.data["bytesWritten"]) {
-        execWorkspaceBytesWritten.inc(Number(result.data["bytesWritten"]));
+      if (result.type === "error") {
+        const err = new Error(result.error || "VM execution error");
+        (err as any).data = result.data;
+        throw err;
       }
 
-      return { ...result, messageId: String(id) };
+      if (message.type === "execute" && result.data?.exitCode !== undefined) {
+        execProcessExitCode.inc({
+          command: message.command,
+          exit_code: result.data.exitCode.toString(),
+        });
+      } else if (message.type === "write_file" && result.data?.bytesWritten) {
+        execWorkspaceBytesWritten.inc(result.data.bytesWritten);
+      }
+
+      return { ...result, messageId: id };
     } catch (err) {
       status = "error";
       throw err;
     } finally {
       const duration =
         Number(process.hrtime.bigint() - startTime) / 1_000_000_000;
-      execMessageDurationSeconds.observe({ type: String(message.type) }, duration);
-      execMessageTotal.inc({ type: String(message.type), status });
+      execMessageDurationSeconds.observe({ type: message.type }, duration);
+      execMessageTotal.inc({ type: message.type, status });
     }
   } finally {
     releaseLock();

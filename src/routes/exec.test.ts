@@ -95,7 +95,6 @@ describe("Exec REST Routes (/exec/*)", () => {
         async (_sid, _msg, onStream) => {
           onStream?.({ stream: "stdout", data: "hello world\n" });
           return {
-            messageId: "msg-1",
             type: "response",
             data: { exitCode: 0, signal: undefined, duration: 42 },
           };
@@ -117,7 +116,6 @@ describe("Exec REST Routes (/exec/*)", () => {
         async (_sid, _msg, onStream) => {
           onStream?.({ stream: "stdout", data: "chunk1" });
           return {
-            messageId: "msg-2",
             type: "response",
             data: { exitCode: 0 },
           };
@@ -174,7 +172,6 @@ describe("Exec REST Routes (/exec/*)", () => {
 
     it("writes base64 encoded content to session gateway", async () => {
       vi.mocked(sendSessionMessage).mockResolvedValue({
-        messageId: "msg-3",
         type: "response",
         data: { bytesWritten: 12 },
       });
@@ -200,7 +197,6 @@ describe("Exec REST Routes (/exec/*)", () => {
 
     it("reads and decodes file content from base64", async () => {
       vi.mocked(sendSessionMessage).mockResolvedValue({
-        messageId: "msg-4",
         type: "response",
         data: {
           content: Buffer.from("contents of file").toString("base64"),
@@ -217,7 +213,6 @@ describe("Exec REST Routes (/exec/*)", () => {
   describe("GET /exec/:sessionId/files", () => {
     it("lists files in session workspace", async () => {
       vi.mocked(sendSessionMessage).mockResolvedValue({
-        messageId: "msg-5",
         type: "response",
         data: {
           files: [{ path: "app.js", type: "file", size: 100 }],

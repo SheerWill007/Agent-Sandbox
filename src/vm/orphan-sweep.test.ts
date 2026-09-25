@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { sweepJailDirectories, sweepOrphanedResources } from "./orphan-sweep.js";
+import * as jailer from "./jailer.js";
 
 describe("orphan-sweep", () => {
   let tmpDir: string;
@@ -13,7 +14,6 @@ describe("orphan-sweep", () => {
 
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
-    vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
 
@@ -23,7 +23,7 @@ describe("orphan-sweep", () => {
     fs.mkdirSync(path.join(fcDir, "vm-1"), { recursive: true });
     fs.mkdirSync(path.join(fcDir, "vm-2"), { recursive: true });
 
-    vi.stubEnv("FIRECRACKER_JAIL_BASE", fakeJailBase);
+    vi.spyOn(jailer, "JAIL_BASE_DIR", "get").mockReturnValue(fakeJailBase);
 
     expect(fs.existsSync(path.join(fcDir, "vm-1"))).toBe(true);
     expect(fs.existsSync(path.join(fcDir, "vm-2"))).toBe(true);

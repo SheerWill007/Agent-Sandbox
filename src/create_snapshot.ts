@@ -18,8 +18,6 @@ import {
   type VmNetworkInfo,
 } from "./vm/networking.js";
 
-/* eslint-disable no-console */
-
 export async function startFirecrackerProcess(
   functionId: string,
   jail: JailPaths,
@@ -60,9 +58,7 @@ export function createFcClient(apiSock: string) {
   });
 }
 
-type FcClient = ReturnType<typeof createFcClient>;
-
-export async function configureVm(client: FcClient, resources: VmResourceConfig = loadResourceConfig()) {
+export async function configureVm(client: any, resources: VmResourceConfig = loadResourceConfig()) {
   await client.put("/machine-config", { vcpu_count: resources.vcpuCount, mem_size_mib: resources.memSizeMib });
 
   await client.put("/boot-source", {
