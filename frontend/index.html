@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Sandbox - Hardware-Isolated Execution for AI Agents</title>
+    <meta name="description" content="Secure Firecracker microVM execution environment for AI agents with hardware-level isolation and millisecond boot times.">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="nav-logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="2" width="28" height="28" rx="6" stroke="url(#gradient)" stroke-width="2"/>
+                    <path d="M16 8V24M10 16H22" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop offset="0%" stop-color="#4f7cff"/>
+                            <stop offset="100%" stop-color="#7c4fff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span>Agent Sandbox</span>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#use-cases">Use Cases</a></li>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <a href="https://github.com/SheerWill007/Agent-Sandbox" class="btn btn-primary">View on GitHub</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Agent Sandbox</span>
+                </h1>
+                <p class="hero-subtitle">Secure Hardware-Isolated Execution for AI Agents</p>
+                <p class="hero-description">
+                    Built on Firecracker microVMs. Every AI agent session gets its own dedicated Linux machine with ~90ms boot time, 
+                    hardware-level isolation, and automatic cleanup.
+                </p>
+                <div class="hero-cta">
+                    <a href="#getting-started" class="btn btn-large btn-primary">Get Started</a>
+                    <a href="https://github.com/SheerWill007/Agent-Sandbox" class="btn btn-large btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="hero-terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                        <span class="terminal-dot"></span>
+                    </div>
+                    <div class="terminal-body">
+                        <pre><code><span class="prompt">$</span> npm install @agent-sandbox/sdk
+<span class="prompt">$</span> <span class="keyword">const</span> sandbox = <span class="keyword">new</span> <span class="function">Sandbox</span>({ apiKey });
+<span class="prompt">$</span> <span class="keyword">const</span> session = sandbox.<span class="function">create</span>({ template: <span class="string">"python"</span> });
+<span class="prompt">$</span> <span class="keyword">await</span> session.<span class="function">runCode</span>(<span class="string">"print('Hello from isolated VM!')"</span>);
+<span class="comment">// ✓ Executed in ~90ms cold start</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">~90ms</div>
+                    <div class="stat-label">Cold Boot Time (p50)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">KVM</div>
+                    <div class="stat-label">Hardware-Level Isolation</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3+</div>
+                    <div class="stat-label">Language Environments</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">&lt;5ms</div>
+                    <div class="stat-label">Snapshot Restore (p95)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Why Agent Sandbox?</h2>
+            <p class="section-subtitle">Defense-in-depth isolation for AI-generated code execution</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M3 9h18M9 3v18"/>
+                        </svg>
+                    </div>
+                    <h3>Hardware Isolation</h3>
+                    <p>Each session runs in a dedicated Firecracker microVM with its own Linux kernel. KVM + Jailer ensure true isolation—no shared kernel, no container escape vectors.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Fast Boot (~90ms)</h3>
+                    <p>Cold start from scratch in ~90ms (p50). Snapshot restoration in 1-5ms. Network namespace, veth pair, and iptables setup included. No waiting—instant execution.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 18 22 12 16 6"/>
+                            <polyline points="8 6 2 12 8 18"/>
+                        </svg>
+                    </div>
+                    <h3>Multi-Language Support</h3>
+                    <p>Pre-built templates for Node.js 22, Python 3.12, and Go 1.23. Bring your own Dockerfile to create custom environments with any toolchain.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M2 12h20"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </div>
+                    <h3>Network Isolation</h3>
+                    <p>Per-VM Linux network namespace with dedicated veth pair, TAP device, and iptables egress chains. Full outbound access, zero cross-tenant leakage.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>MCP Integration</h3>
+                    <p>Native Model Context Protocol server. Connect any MCP-compatible agent (Claude Desktop, Cline, Roo Cline) directly to isolated execution environments.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <h3>Auto Cleanup</h3>
+                    <p>Ephemeral sessions with 30-minute idle TTL. Automatic VM teardown, jail directory removal, and network namespace reclamation. Orphan recovery on restart.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-subtitle">Defense-in-depth isolation across compute, network, and filesystem layers</p>
+            <div class="architecture-diagram">
+                <div class="arch-box arch-host">
+                    <div class="arch-header">Host (Linux + KVM)</div>
+                    <div class="arch-row">
+                        <div class="arch-component">Express API<br>/exec/*</div>
+                        <div class="arch-component">MCP Server<br>stdio / SSE</div>
+                        <div class="arch-component">Prometheus<br>/metrics</div>
+                    </div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-row">
+                        <div class="arch-component arch-wide">Session Gateway (lazy VM allocation)</div>
+                    </div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-row">
+                        <div class="arch-component arch-wide">VM Manager (jailer + snapshot restore)</div>
+                    </div>
+                    <div class="arch-arrow">↓</div>
+                    <div class="arch-row">
+                        <div class="arch-component arch-wide">Per-VM Network Namespace (veth + TAP + iptables)</div>
+                    </div>
+                    <div class="arch-arrow">vsock IPC</div>
+                    <div class="arch-box arch-vm">
+                        <div class="arch-header">Firecracker microVM (UNTRUSTED)</div>
+                        <div class="arch-row">
+                            <div class="arch-component">runtime.js<br>(Node.js)</div>
+                            <div class="arch-component">/workspace<br>(tmpfs 512MB)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="architecture-interfaces">
+                <h3>Three Integration Interfaces</h3>
+                <div class="interface-grid">
+                    <div class="interface-card">
+                        <h4>TypeScript SDK</h4>
+                        <p>Type-safe client library with async/await API, streaming support, and full filesystem operations.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="sdk">Copy</button>
+                            <pre><code>import { Sandbox } from "@agent-sandbox/sdk";
+
+const sandbox = new Sandbox({ apiKey });
+const session = sandbox.create({ 
+  template: "python" 
+});
+
+const result = await session.runCode(
+  "print('Hello VM!')"
+);
+await session.destroy();</code></pre>
+                        </div>
+                    </div>
+                    <div class="interface-card">
+                        <h4>REST API</h4>
+                        <p>HTTP/JSON endpoints for session management, command execution, and file operations. Bearer token authentication.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="rest">Copy</button>
+                            <pre><code>curl -X POST \
+  http://localhost:3000/exec/my-session/execute \
+  -H "Authorization: Bearer $KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "template": "node",
+    "command": "node",
+    "args": ["--version"]
+  }'</code></pre>
+                        </div>
+                    </div>
+                    <div class="interface-card">
+                        <h4>MCP Server</h4>
+                        <p>Model Context Protocol integration for Claude Desktop, Cline, and other MCP clients. Stdio and SSE transports.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="mcp">Copy</button>
+                            <pre><code>{
+  "mcpServers": {
+    "agent-sandbox": {
+      "command": "node",
+      "args": [
+        "dist/mcp/stdio.js"
+      ]
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="use-cases">
+        <div class="container">
+            <h2 class="section-title">Use Cases</h2>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">🤖</div>
+                    <h3>AI Agent Execution</h3>
+                    <p>Let LLM agents write and execute code safely. Install packages, read files, spawn processes—all in hardware-isolated VMs that boot in milliseconds and self-destruct after use.</p>
+                    <ul>
+                        <li>Code generation and execution</li>
+                        <li>Package installation (npm, pip, go get)</li>
+                        <li>Multi-step workflows with persistent state</li>
+                        <li>Network access for API calls</li>
+                    </ul>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">⚡</div>
+                    <h3>Untrusted Code Execution</h3>
+                    <p>Run user-submitted code, competitive programming challenges, or CI/CD test suites in fully isolated environments with resource limits and automatic cleanup.</p>
+                    <ul>
+                        <li>Online code playgrounds</li>
+                        <li>Competitive programming judges</li>
+                        <li>CI/CD pipeline isolation</li>
+                        <li>Code interview platforms</li>
+                    </ul>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon">📦</div>
+                    <h3>Package Testing</h3>
+                    <p>Test npm, pip, or gem packages in clean ephemeral environments. Validate installation scripts, check dependencies, and detect malicious behavior before deployment.</p>
+                    <ul>
+                        <li>Pre-deployment package validation</li>
+                        <li>Dependency conflict detection</li>
+                        <li>Malware and supply-chain analysis</li>
+                        <li>Build reproducibility testing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Getting Started Section -->
+    <section id="getting-started" class="getting-started">
+        <div class="container">
+            <h2 class="section-title">Getting Started</h2>
+            <p class="section-subtitle">From zero to first VM execution in 5 minutes</p>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Prerequisites</h3>
+                        <p>Ensure you have Linux with KVM, Node.js v20.12+, and Docker installed.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="prereq">Copy</button>
+                            <pre><code># Check KVM support
+ls -l /dev/kvm
+
+# Install Node.js (Ubuntu/Debian)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Install Firecracker</h3>
+                        <p>Download and install Firecracker and Jailer binaries.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="firecracker">Copy</button>
+                            <pre><code>ARCH="$(uname -m)"
+release_url="https://github.com/firecracker-microvm/firecracker/releases"
+latest=$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} ${release_url}/latest))
+
+curl -L ${release_url}/download/${latest}/firecracker-${latest}-${ARCH}.tgz | tar -xz
+
+sudo mv release-${latest}-${ARCH}/firecracker-${latest}-${ARCH} /usr/local/bin/firecracker
+sudo mv release-${latest}-${ARCH}/jailer-${latest}-${ARCH} /usr/local/bin/jailer
+
+firecracker --version</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Install Agent Sandbox</h3>
+                        <p>Clone the repository and build environment templates.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="install">Copy</button>
+                            <pre><code>git clone https://github.com/SheerWill007/Agent-Sandbox.git
+cd Agent-Sandbox/backend
+npm install
+
+# Enable IP forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# Create Firecracker user
+sudo groupadd -g 982 firecracker 2>/dev/null || true
+sudo useradd -u 997 -g 982 -M -s /usr/sbin/nologin firecracker 2>/dev/null || true
+
+# Download kernel
+sudo mkdir -p /var/lib/agent-sandbox/artifacts
+wget https://github.com/SheerWill007/Agent-Sandbox/releases/download/Beta/vmlinux
+sudo mv vmlinux /var/lib/agent-sandbox/artifacts/
+
+# Build templates
+sudo ../templates/build.sh node
+sudo ../templates/build.sh python
+sudo ../templates/build.sh go</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Start and Test</h3>
+                        <p>Create an API key, start the server, and execute your first command.</p>
+                        <div class="code-block">
+                            <button class="copy-btn" data-copy="start">Copy</button>
+                            <pre><code># Create API key
+npm run keys create "my-key"
+export SANDBOX_API_KEY="sk_test_..."
+
+# Start server
+sudo npm start
+
+# In another terminal, test execution
+curl -X POST http://localhost:3000/exec/test-session/execute \
+  -H "Authorization: Bearer $SANDBOX_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"template":"python","command":"python3","args":["--version"]}'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="download">
+        <div class="container">
+            <h2 class="section-title">Download</h2>
+            <p class="section-subtitle">Pre-packaged releases for Linux, Windows (WSL2), and macOS</p>
+            <div class="download-grid">
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+                            <polyline points="7 11 12 16 17 11"/>
+                            <line x1="12" y1="16" x2="12" y2="3"/>
+                        </svg>
+                    </div>
+                    <h3>Linux</h3>
+                    <p>Ubuntu, Debian, RHEL, CentOS, Arch</p>
+                    <p class="download-file">agent-sandbox-linux-v1.0.0.tar.gz</p>
+                    <a href="https://github.com/SheerWill007/Agent-Sandbox/releases" class="btn btn-primary btn-download">Download for Linux</a>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 3v18"/>
+                            <path d="M15 3v18"/>
+                        </svg>
+                    </div>
+                    <h3>Windows (WSL2)</h3>
+                    <p>Requires Windows 10/11 with WSL2</p>
+                    <p class="download-file">agent-sandbox-windows-v1.0.0.zip</p>
+                    <a href="https://github.com/SheerWill007/Agent-Sandbox/releases" class="btn btn-primary btn-download">Download for Windows</a>
+                </div>
+                <div class="download-card">
+                    <div class="download-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                        </svg>
+                    </div>
+                    <h3>macOS</h3>
+                    <p>Requires Lima or UTM with KVM support</p>
+                    <p class="download-file">agent-sandbox-macos-v1.0.0.tar.gz</p>
+                    <a href="https://github.com/SheerWill007/Agent-Sandbox/releases" class="btn btn-primary btn-download">Download for macOS</a>
+                </div>
+            </div>
+            <div class="download-note">
+                <p><strong>Note:</strong> Agent Sandbox requires a Linux host with KVM support. Windows users should install WSL2, and macOS users need Lima or UTM with virtualization enabled. See the <a href="docs/RELEASE.md">full documentation</a> for detailed installation instructions.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Does Agent Sandbox require KVM?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes. Agent Sandbox is built on Firecracker, which requires Linux KVM for hardware virtualization. The host must have <code>/dev/kvm</code> accessible. This provides true kernel-level isolation—something containers cannot offer. For Windows, use WSL2 with nested virtualization enabled. For macOS, use Lima or UTM.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I run this on Windows or macOS?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p><strong>Windows:</strong> Install WSL2 (Ubuntu or Debian), then follow the Linux installation steps inside WSL2. Ensure nested virtualization is enabled in your VM settings if running on Hyper-V.</p>
+                        <p><strong>macOS:</strong> Firecracker requires KVM, which is Linux-only. Use Lima (lightweight Linux VM) or UTM with Linux and KVM support. The setup is more complex and performance may vary.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How do I create custom environment templates?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Create a directory under <code>templates/&lt;name&gt;/</code> with a Dockerfile that extends <code>agent-sandbox-base:latest</code>. Install any tools or runtimes you need, then run <code>sudo ./templates/build.sh &lt;name&gt;</code>. The build pipeline extracts the filesystem, boots a Firecracker VM, and snapshots the running state. See <a href="docs/RELEASE.md">docs/RELEASE.md</a> for examples.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>What are the resource limits per VM?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Default limits per microVM:</p>
+                        <ul>
+                            <li><strong>CPU:</strong> 1 vCPU, 50% quota (50ms per 100ms period)</li>
+                            <li><strong>Memory:</strong> 128 MB guest RAM (cgroup-enforced)</li>
+                            <li><strong>Disk:</strong> 512 MB tmpfs workspace (ephemeral)</li>
+                            <li><strong>Processes:</strong> 256 max PIDs (fork-bomb protection)</li>
+                            <li><strong>Network:</strong> Outbound only, optional rate limiting (10 Mbit/s default)</li>
+                        </ul>
+                        <p>All limits are configurable via environment variables. See Configuration Reference in the docs.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Is network access restricted?</span>
+                        <svg class="faq-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>By default, VMs have unrestricted outbound internet access via NAT, except:</p>
+                        <ul>
+                            <li>Cloud metadata endpoint (169.254.169.254) is blocked</li>
+                            <li>Cross-tenant communication (10.0.0.0/16) is blocked</li>
+                            <li>Host services on 10.0.0.0/16 are blocked</li>
+                        </ul>
+                        <p>You can configure DNS-based domain filtering (<code>VM_DNS_MODE=allow/deny</code>) or destination IP/port rules (<code>VM_DEST_MODE=allow/deny</code>) for finer control. Bandwidth throttling is also available.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="28" height="28" rx="6" stroke="url(#gradient2)" stroke-width="2"/>
+                            <path d="M16 8V24M10 16H22" stroke="url(#gradient2)" stroke-width="2" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32">
+                                    <stop offset="0%" stop-color="#4f7cff"/>
+                                    <stop offset="100%" stop-color="#7c4fff"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>Agent Sandbox</span>
+                    </div>
+                    <p>Hardware-isolated execution for AI agents</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#features">Features</a></li>
+                            <li><a href="#architecture">Architecture</a></li>
+                            <li><a href="#use-cases">Use Cases</a></li>
+                            <li><a href="#download">Download</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Resources</h4>
+                        <ul>
+                            <li><a href="docs/RELEASE.md">Documentation</a></li>
+                            <li><a href="#getting-started">Getting Started</a></li>
+                            <li><a href="https://github.com/SheerWill007/Agent-Sandbox">GitHub</a></li>
+                            <li><a href="https://github.com/SheerWill007/Agent-Sandbox/releases">Releases</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Community</h4>
+                        <ul>
+                            <li><a href="https://github.com/SheerWill007/Agent-Sandbox/issues">Issues</a></li>
+                            <li><a href="https://github.com/SheerWill007/Agent-Sandbox/discussions">Discussions</a></li>
+                            <li><a href="backend/CONTRIBUTING.md">Contributing</a></li>
+                            <li><a href="#faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Agent Sandbox. Licensed under <a href="LICENSE">AGPL-3.0</a>.</p>
+                <p>Created by <a href="https://github.com/SheerWill007">Vivek Jadhav</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
