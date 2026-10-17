@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-001",
+  "type": "refactor",
+  "description": "Restructure repository into /backend, /frontend, /docs layout. Move all backend source (src/, package.json, tsconfig.json, SDK, templates, minimal-rootfs, all test files, config files) into /backend. Create /frontend and /docs directories. Remove unnecessary files from root (keep only top-level README.md, LICENSE, .gitignore). Update backend/package.json paths, backend/tsconfig.json paths, and backend/.github workflows.",
+  "status": "pending",
+  "steps": [
+    "Create /backend, /frontend, /docs directory structure at repository root",
+    "Move src/ → backend/src/ (includes all *.test.ts files)",
+    "Move sdk/ → backend/sdk/",
+    "Move templates/ → backend/templates/",
+    "Move minimal-rootfs/ → backend/minimal-rootfs/",
+    "Move package.json → backend/package.json, package-lock.json → backend/package-lock.json",
+    "Move tsconfig.json → backend/tsconfig.json",
+    "Move vitest.config.ts → backend/vitest.config.ts",
+    "Move example.env → backend/example.env",
+    "Move CONTRIBUTING.md → backend/CONTRIBUTING.md",
+    "Move .editorconfig, .eslintignore, .eslintrc.json, .prettierignore, .prettierrc.json → backend/",
+    "Move .github/ → backend/.github/ and update workflow paths to reference backend/ locations",
+    "Copy LICENSE to backend/LICENSE (keep original at root)",
+    "Update backend/package.json: change all script paths that reference TypeScript to use correct paths (dist/ output already relative, no change needed), add workspace root reference if needed",
+    "Update backend/tsconfig.json if any absolute paths exist (check outDir, rootDir)",
+    "Update backend/.github/workflows/*.yml to use correct working directories (add 'working-directory: backend' or update paths)",
+    "Create backend/.gitignore that includes dist/, node_modules/, etc. (copy from root .gitignore)",
+    "Update root .gitignore to exclude backend/dist/, backend/node_modules/, frontend/node_modules/ if any",
+    "Remove quick-start.bat from root (dev script not needed in restructured layout)"
+  ],
+  "acceptance_criteria": [
+    "All TypeScript source code, tests, and build configuration moved to /backend",
+    "Root directory contains only README.md, LICENSE, .gitignore, and the three subdirectories (/backend, /frontend, /docs)",
+    "backend/package.json scripts still work (npm run build, npm test, npm start from backend/ directory)",
+    "No broken path references in backend/tsconfig.json or backend/package.json",
+    "backend/.github/workflows reference correct paths"
+  ],
+  "verification": [
+    "cd backend && npm install",
+    "cd backend && npm run build — TypeScript compiles successfully to backend/dist/",
+    "cd backend && npm test — all existing tests pass",
+    "Verify backend/.github/workflows/*.yml files reference backend paths correctly (manual inspection or dry-run if possible)",
+    "ls at root shows only: README.md, LICENSE, .gitignore, backend/, frontend/, docs/"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

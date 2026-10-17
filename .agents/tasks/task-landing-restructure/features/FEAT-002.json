@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Build professional, responsive landing page in /frontend using vanilla HTML, CSS, and JavaScript. Dark theme with blue/purple gradient accents inspired by Auronix webflow design. Include hero section, features, capabilities, how it works, architecture diagram placeholder, SDK code examples, performance metrics, CTA sections, and footer. Fully responsive (mobile-first CSS). No build tooling required — serve static files directly.",
+  "status": "pending",
+  "steps": [
+    "Create frontend/index.html with semantic HTML5 structure: nav, header (hero), main (sections), footer",
+    "Create frontend/css/styles.css with dark theme design system: CSS variables for colors (dark bg, blue/purple gradients, white/gray text), typography scale, spacing scale, responsive breakpoints",
+    "Implement hero section: headline 'Agent Sandbox: Hardware-Isolated Execution for AI Agents', subheadline highlighting Firecracker microVMs and <100ms boot time, CTA buttons (Get Started, View Docs, GitHub link)",
+    "Implement features grid section: 4-6 feature cards with icons (Hardware Isolation, Millisecond Boot, Complete Linux Environment, Pre-built Templates, Ephemeral Sessions, Network Control) using CSS Grid, responsive to 1-2-3 columns",
+    "Implement 'How It Works' section: 3-step process flow (Request → VM Restore → Execution → Cleanup) with visual indicators, brief descriptions",
+    "Implement architecture diagram section: placeholder for architecture diagram (use comment or simple SVG placeholder) with caption referencing defense-in-depth isolation",
+    "Implement code example section: tabbed interface showing SDK usage examples (TypeScript SDK, REST API, MCP) using vanilla JS for tab switching, syntax-highlighted code blocks (use simple CSS styling, no external highlighter library)",
+    "Implement capabilities/interfaces section: 3-column grid for TypeScript SDK, REST API, MCP Server with brief descriptions and links",
+    "Implement performance metrics section: highlight key numbers (90ms cold start p50, 1-5ms snapshot restore, 128MB default memory, hardware-level isolation) in visually prominent cards",
+    "Implement security/isolation section: list isolation layers (dedicated kernel, network namespace, jailer, cgroups, etc.) in a structured layout",
+    "Implement CTA section: 'Ready to Get Started?' with button to GitHub repo and docs",
+    "Implement footer: project info, license (AGPL-3.0), author credit (William Law / willx.tech), links to GitHub, SDK, documentation",
+    "Add responsive CSS: mobile-first approach, breakpoints at 640px, 768px, 1024px, ensure all sections stack appropriately on mobile",
+    "Add smooth scroll behavior and minimal JavaScript for interactivity: tab switching for code examples, optional smooth scroll to sections on nav clicks",
+    "Create frontend/js/main.js for interactive behaviors (tab switching, mobile menu toggle if nav has hamburger)",
+    "Add favicon.ico or favicon.png in frontend/ root (simple geometric icon or 'AS' monogram)",
+    "Test responsive layout manually by resizing browser (document testing approach in FEAT file)"
+  ],
+  "acceptance_criteria": [
+    "frontend/index.html opens in browser and displays full landing page with all sections",
+    "Dark theme with blue/purple gradient accents applied throughout",
+    "Page is fully responsive: layout adapts correctly on mobile (375px), tablet (768px), and desktop (1024px+) viewports",
+    "Code example tabs switch correctly when clicked",
+    "All text content accurately represents Agent Sandbox features, capabilities, and performance metrics from README.md",
+    "No external dependencies (no npm, no frameworks, no CDN libraries except optional Google Fonts or similar)",
+    "Footer includes correct license, author, and GitHub links"
+  ],
+  "verification": [
+    "Open frontend/index.html in a modern browser (Chrome, Firefox, Edge) — page loads without errors",
+    "Inspect page in browser DevTools: no console errors, no broken image links, no missing CSS",
+    "Test responsive design: resize browser to 375px width (mobile), 768px (tablet), 1280px (desktop) — all sections render correctly",
+    "Click code example tabs — content switches correctly",
+    "Verify all content (features, performance numbers, security layers) matches README.md facts"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

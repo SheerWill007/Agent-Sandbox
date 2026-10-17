@@ -1,0 +1,7 @@
+{
+  "task_id": "task-landing-restructure",
+  "task_description": "Restructure Agent-Sandbox repository into backend/frontend/docs layout, build professional Auronix-inspired landing page, and create comprehensive RELEASE.md documentation",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

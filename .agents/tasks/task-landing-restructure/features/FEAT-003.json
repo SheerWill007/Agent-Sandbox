@@ -1,0 +1,33 @@
+{
+  "id": "FEAT-003",
+  "type": "docs",
+  "description": "Create ONE comprehensive docs/RELEASE.md file covering all installation instructions, deployment guide, usage examples, release package information for Linux/Windows/macOS, and release notes. This is the single source of truth for getting started, deploying, and understanding releases. Update root README.md to describe new repository structure and link to docs/RELEASE.md and frontend landing page.",
+  "status": "pending",
+  "steps": [
+    "Create docs/RELEASE.md with comprehensive structure: Title, Table of Contents, Introduction (project overview), Installation (Prerequisites, Firecracker Setup, Project Setup, Template Building), Deployment (Local, Production, Docker, Systemd service), Usage (TypeScript SDK examples, REST API examples, MCP integration examples), Release Packages (Linux, macOS, Windows — placeholder structure for future binary releases), Configuration Reference (environment variables from example.env), Troubleshooting (common issues), Release Notes (version history — initial v1.0.0 entry), License, Authors",
+    "Installation section: Expand on README.md Getting Started with step-by-step instructions for Linux (KVM setup, Firecracker install, user creation, IP forwarding, kernel download, npm install, template builds, API key creation)",
+    "Deployment section: Add production deployment guidance (systemd service file example, reverse proxy config snippet for nginx, environment variable security, log rotation, monitoring setup)",
+    "Usage section: Include practical examples from sdk/typescript/README.md (session creation, code execution, file operations, streaming), REST API curl examples from main README.md, MCP server setup from README.md",
+    "Release Packages section: Document structure for distributing Agent Sandbox (note: actual binaries not built in this task, but document the intended approach — Linux: .tar.gz with binary + templates + systemd unit, macOS: .tar.gz or .pkg, Windows: .zip with instructions or note that Windows is not supported for server deployment, only SDK client usage)",
+    "Configuration Reference section: Table of all environment variables from example.env with descriptions, defaults, and required vs optional",
+    "Troubleshooting section: Common issues (KVM not available, permission errors, network namespace failures, Firecracker binary not found, port conflicts)",
+    "Release Notes section: v1.0.0 initial release entry with features list, known limitations from README.md",
+    "Update root README.md: Replace or supplement content to describe new repository structure, add section at top: 'Repository Structure' explaining /backend (all source code and backend docs), /frontend (landing page — link to frontend/index.html or deployed URL placeholder), /docs (comprehensive release and deployment documentation). Link to docs/RELEASE.md for full installation and deployment instructions. Keep brief project overview, link to backend/README.md for detailed technical documentation",
+    "Ensure docs/RELEASE.md is the ONLY new markdown file created in this task (requirement: 'DO NOT CREATE ANY OTHER md files other than this JUST ONE file with all the instructions')"
+  ],
+  "acceptance_criteria": [
+    "docs/RELEASE.md exists and contains all sections: Installation, Deployment, Usage, Release Packages, Configuration, Troubleshooting, Release Notes",
+    "docs/RELEASE.md is comprehensive and self-contained — a user can follow it to install, deploy, and use Agent Sandbox without needing to hunt through other files",
+    "No other new .md files created (only docs/RELEASE.md and updated root README.md)",
+    "Root README.md updated to describe new structure and link to docs/RELEASE.md and frontend/",
+    "All instructions in docs/RELEASE.md are accurate and match actual project structure (backend/ paths, etc.)"
+  ],
+  "verification": [
+    "Read docs/RELEASE.md from start to finish — verify completeness and clarity",
+    "Check that docs/ directory contains only RELEASE.md (no other markdown files)",
+    "Read updated root README.md — verify it describes repository structure and links to docs/RELEASE.md and frontend/",
+    "Cross-check installation instructions in docs/RELEASE.md against backend/example.env and backend/README.md for accuracy"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
