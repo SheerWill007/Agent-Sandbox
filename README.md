@@ -1,51 +1,112 @@
 # Agent Sandbox
 
-An isolated execution environment for AI agents built on Firecracker microVMs.
+**Secure Hardware-Isolated Execution Environment for AI Agents**
 
 Agent Sandbox gives every AI agent session its own dedicated Linux machine. Code runs, packages install, files are read and written, processes spawn, and networks are accessed — all inside a hardware-isolated microVM that boots in under 100 milliseconds and is permanently destroyed when the session ends.
 
 ---
 
-## Table of Contents
+## 🌟 Key Features
 
-- [Why This Exists](#why-this-exists)
-- [Architecture](#architecture)
-- [How It Works](#how-it-works)
-- [Capabilities](#capabilities)
-- [Environment Templates](#environment-templates)
-- [Interfaces](#interfaces)
-  - [TypeScript SDK](#typescript-sdk)
-  - [REST API](#rest-api)
-  - [MCP Server](#mcp-server)
-- [Isolation Model](#isolation-model)
-- [Security Model and Trust Boundaries](#security-model-and-trust-boundaries)
-- [Authentication and Key Management](#authentication-and-key-management)
-- [Getting Started](#getting-started)
-- [Configuration Reference](#configuration-reference)
-- [Observability](#observability)
-- [Testing](#testing)
-- [Performance and Benchmarks](#performance-and-benchmarks)
-- [Project Structure](#project-structure)
-- [Technology Stack](#technology-stack)
-- [Known Limitations](#known-limitations)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Author](#author)
+- ⚡ **~90ms Boot Time** - Cold start in milliseconds via snapshot restoration
+- 🔒 **Hardware Isolation** - True kernel-level isolation using KVM + Firecracker
+- 🌐 **Multi-Language** - Pre-built Node.js, Python, Go environments + custom Dockerfiles
+- 🛡️ **Network Isolation** - Per-VM network namespace with egress filtering
+- 🔌 **Three Interfaces** - TypeScript SDK, REST API, and MCP Server
+- ♻️ **Auto Cleanup** - Ephemeral sessions with automatic TTL-based reaping
 
 ---
 
-## Why This Exists
+## 📁 Repository Structure
 
-AI agents need to act: they write code and execute it, install libraries, call external services, manage files, and spawn background processes. Running agent-generated code on a host machine is unpredictable, potentially destructive, and cannot be adequately contained with containers alone because containers share the host kernel.
+This repository is organized into three main directories:
 
-**Agent Sandbox** provides each agent session with a dedicated Firecracker microVM:
+### `/backend` - Core Server & SDK
 
-- **Hardware-level isolation.** Each session runs its own Linux kernel. A misbehaving or adversarial agent cannot escape to the host or interfere with other sessions.
-- **Millisecond restore times.** Pre-snapshotted VM state is restored in 1 to 5 milliseconds. The total end-to-end cold start, including network namespace provisioning, veth pair creation, TAP device setup, and iptables egress chain configuration, is approximately 90 milliseconds at the 50th percentile.
-- **A complete Linux environment.** Agents receive a real filesystem, a full process table, and a network stack with outbound internet access.
-- **Pre-built and custom environments.** Sessions can be provisioned with pre-baked Node.js, Python, Go, or custom Dockerfile environments.
-- **Ephemeral by design.** Sessions are stateless, time-bounded, and automatically reclaimed. No persistent state leaks between sessions.
+All source code, configuration, and build tools for the Agent Sandbox server.
+
+- `backend/src/` - TypeScript source code
+- `backend/sdk/typescript/` - Client SDK
+- `backend/templates/` - Environment template build scripts
+- `backend/.github/` - CI/CD workflows
+
+**See:** [backend/README.md](backend/README.md) for detailed backend documentation.
+
+### `/frontend` - Landing Page
+
+Modern, responsive landing page showcasing Agent Sandbox capabilities.
+
+- `frontend/index.html` - Main landing page
+- `frontend/assets/css/` - Styles
+- `frontend/assets/js/` - Interactive features (TypeScript-based)
+
+**Visit:** Open `frontend/index.html` in a browser to view the landing page.
+
+### `/docs` - Comprehensive Documentation
+
+Complete installation, deployment, and usage guides.
+
+- **[docs/RELEASE.md](docs/RELEASE.md)** - Full release documentation including:
+  - Installation instructions (Linux, Windows WSL2, macOS)
+  - Deployment guide (systemd, nginx, SSL/TLS)
+  - API documentation with curl examples
+  - SDK usage examples
+  - MCP integration guide
+  - Troubleshooting and FAQ
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Linux host with KVM support
+- Node.js v20.12+
+- Docker (for building templates)
+- Root access
+
+### Installation (Ubuntu/Debian)
+
+```bash
+# 1. Install Firecracker
+ARCH="$(uname -m)"
+release_url="https://github.com/firecracker-microvm/firecracker/releases"
+latest=$(basename $(curl -fsSLI -o /dev/null -w %{url_effective} ${release_url}/latest))
+curl -L ${release_url}/download/${latest}/firecracker-${latest}-${ARCH}.tgz | tar -xz
+sudo mv release-${latest}-${ARCH}/firecracker-${latest}-${ARCH} /usr/local/bin/firecracker
+sudo mv release-${latest}-${ARCH}/jailer-${latest}-${ARCH} /usr/local/bin/jailer
+
+# 2. Setup and build
+git clone https://github.com/SheerWill007/Agent-Sandbox.git
+cd Agent-Sandbox/backend
+npm install
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# 3. Build templates
+sudo ./templates/build.sh node
+sudo ./templates/build.sh python
+sudo ./templates/build.sh go
+
+# 4. Start server
+npm run keys create "my-key"  # Save the printed key!
+sudo npm start
+```
+
+**For detailed installation instructions, deployment guides, and troubleshooting, see [docs/RELEASE.md](docs/RELEASE.md).**
+
+---
+
+## 💡 Why This Exists
+
+AI agents need to execute code, install packages, call external services, manage files, and spawn processes. Running agent-generated code on a host machine is risky and cannot be adequately contained with containers alone because containers share the host kernel.
+
+**Agent Sandbox** provides true isolation via hardware virtualization:
+
+- **Hardware-level isolation** - Each session runs its own Linux kernel via KVM
+- **Millisecond boot times** - ~90ms cold start via snapshot restoration
+- **Complete Linux environment** - Real filesystem, full process table, network stack
+- **Pre-built and custom environments** - Node.js, Python, Go, or custom Dockerfiles
+- **Ephemeral by design** - Stateless sessions with automatic cleanup
 
 ---
 
