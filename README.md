@@ -11,7 +11,7 @@ Agent Sandbox gives every AI agent session its own dedicated Linux machine. Code
 
 ## 🚀 Quick Links
 
-- **[Landing Page](frontend/index.html)** — Visual overview and feature showcase
+- **[Landing Page](https://agent-sandboxx.vercel.app)** — Visual overview and feature showcase ([source](NewFrontend/))
 - **[Complete Documentation](docs/RELEASE.md)** — Installation, deployment, API reference, troubleshooting
 - **[Backend Source](backend/)** — TypeScript/Node.js server, SDK, and MCP implementation
 - **[GitHub Repository](https://github.com/SheerWill007/Agent-Sandbox)**
@@ -30,12 +30,12 @@ All source code, configuration, and development tooling:
 - Environment template build pipeline
 - Tests, benchmarks, and CLI tools
 
-### [`frontend/`](frontend/)
-Modern landing page built with vanilla HTML, CSS, and JavaScript:
-- Dark theme with blue/purple gradients
-- Fully responsive design
-- Interactive features (FAQ accordion, code copy, smooth scroll)
-- **[Open frontend/index.html](frontend/index.html)** in a browser to view
+### [`NewFrontend/`](NewFrontend/)
+Static landing page built with [Astro](https://astro.build):
+- Live at **https://agent-sandboxx.vercel.app** (deployed by Vercel from `main`)
+- Self-hosted fonts, no client-side framework
+- Builds with base path `/` on Vercel and `/Agent-Sandbox/` for GitHub Pages
+- Run locally (Node.js 22.12+): `cd NewFrontend && npm ci && npm run dev`
 
 ### [`docs/`](docs/)
 Comprehensive documentation:
