@@ -13,9 +13,14 @@ test('builds the Agent Sandbox homepage with project-specific messaging', () => 
   assert.match(html, /MCP server/);
 });
 
-test('publishes links and assets under the GitHub Pages repository path', () => {
-  assert.match(html, /href="\/Agent-Sandbox\/fonts\/fonts\.css"/);
-  assert.match(html, /href="\/Agent-Sandbox\/favicon\.svg"/);
+// Vercel builds serve from '/'; GitHub Pages builds serve from '/Agent-Sandbox/'.
+const base = process.env.VERCEL ? '/' : '/Agent-Sandbox/';
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+
+test('publishes links and assets under the deployment base path', () => {
+  assert.match(html, new RegExp(`href="${escapeRe(base)}fonts/fonts\\.css"`));
+  assert.match(html, new RegExp(`href="${escapeRe(base)}favicon\\.svg"`));
+  assert.match(html, new RegExp(`href="${escapeRe(base)}_astro/[^"]+\\.css"`));
   assert.match(html, /github\.com\/SheerWill007\/Agent-Sandbox/);
 });
 
