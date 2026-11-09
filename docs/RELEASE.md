@@ -1,6 +1,6 @@
 # Agent Sandbox v1.0.0 - Release Documentation
 
-**Release Date:** January 2025  
+**Release Date:** November 9, 2026  
 **Project:** Agent Sandbox  
 **Repository:** https://github.com/SheerWill007/Agent-Sandbox  
 **License:** AGPL-3.0
@@ -63,7 +63,7 @@
 
 **Version:** 1.0.0  
 **Release Type:** Initial Public Release  
-**Release Date:** January 2025
+**Release Date:** November 9, 2026
 
 ### Changelog (v1.0.0)
 
@@ -81,7 +81,8 @@
 - API key management with scope-based access control
 - Per-key fixed-window rate limiting
 - Session TTL reaping and startup orphan recovery
-- Comprehensive test suite (200+ tests, 22 suites)
+- Test suite: 148 tests across 22 files (Vitest)
+- Astro landing site, deployed on Vercel
 - Benchmarking harness with microsecond-accurate timing
 
 **Security:**
@@ -573,8 +574,8 @@ npm pack  # Creates agent-sandbox-sdk-1.0.0.tgz
 ```bash
 cd backend
 
-# Start with auto-reload (uses tsx for TypeScript execution)
-npm run dev
+# Build and start the server
+npm start
 
 # Run specific test suite
 npm test -- session
@@ -1518,74 +1519,33 @@ Error: Invalid API key
 
 ## Release Packages
 
-### Linux Package (`agent-sandbox-linux-v1.0.0.tar.gz`)
+v1.0.0 is a source release. Download **Source code (zip)** or **Source code (tar.gz)** from the
+[v1.0.0 release page](https://github.com/SheerWill007/Agent-Sandbox/releases/tag/v1.0.0), or clone the tag:
+
+```bash
+git clone --branch v1.0.0 https://github.com/SheerWill007/Agent-Sandbox.git
+cd Agent-Sandbox/backend
+npm ci
+npm run build
+```
 
 **Contents:**
 ```
-agent-sandbox/
-├── backend/
-│   ├── dist/              # Compiled JavaScript
-│   ├── node_modules/      # Dependencies
-│   ├── package.json
-│   ├── package-lock.json
-│   └── README.md
-├── frontend/
-│   ├── index.html
-│   ├── assets/
-│   │   ├── css/style.css
-│   │   └── js/main.js
+Agent-Sandbox/
+├── backend/          # Server, MCP server, templates, tests
+│   ├── src/
+│   ├── sdk/typescript/
+│   ├── templates/    # base, node, python, go Dockerfiles + build.sh
+│   └── minimal-rootfs/
+├── NewFrontend/      # Astro landing site
 ├── docs/
 │   └── RELEASE.md
-├── templates/
-│   ├── build.sh
-│   ├── base/
-│   ├── node/
-│   ├── python/
-│   └── go/
 ├── LICENSE
-├── README.md
-└── install.sh             # Installation script
+└── README.md
 ```
 
-**Installation:**
-```bash
-tar -xzf agent-sandbox-linux-v1.0.0.tar.gz
-cd agent-sandbox
-sudo ./install.sh
-```
-
----
-
-### Windows Package (`agent-sandbox-windows-v1.0.0.zip`)
-
-**Contents:** Same as Linux package, plus:
-```
-agent-sandbox/
-├── wsl-setup.ps1          # PowerShell script to configure WSL2
-└── README-WINDOWS.txt     # Windows-specific instructions
-```
-
-**Installation:**
-1. Run `wsl-setup.ps1` in PowerShell (Admin)
-2. Inside WSL2, extract and run `install.sh`
-
----
-
-### macOS Package (`agent-sandbox-macos-v1.0.0.tar.gz`)
-
-**Contents:** Same as Linux package, plus:
-```
-agent-sandbox/
-├── lima-setup.sh          # Script to configure Lima VM
-└── README-MACOS.txt       # macOS-specific instructions
-```
-
-**Installation:**
-```bash
-tar -xzf agent-sandbox-macos-v1.0.0.tar.gz
-cd agent-sandbox
-./lima-setup.sh
-```
+Then follow [Installation Instructions](#installation-instructions) for your platform. On Windows and macOS,
+run the server inside a Linux VM with KVM (WSL2, Lima or UTM) as described above.
 
 ---
 
@@ -1658,14 +1618,14 @@ npm install
 # Run tests
 npm test
 
-# Run in dev mode with auto-reload
-npm run dev
+# Build and start the server
+npm start
 ```
 
 ### Coding Standards
 
 - **TypeScript:** Strict mode enabled, no `any` types without explicit comment justification
-- **Linting:** ESLint + Prettier (run `npm run lint` and `npm run format`)
+- **Formatting:** Follow `.editorconfig` and match the surrounding code; `npm run build` must type-check cleanly
 - **Testing:** Write tests for all new features and bug fixes (Vitest)
 - **Commit Messages:** Follow [Conventional Commits](https://www.conventionalcommits.org/)
   - `feat: add MCP SSE transport`
@@ -1678,12 +1638,11 @@ npm run dev
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/my-feature`
 3. Make your changes
-4. Run tests: `npm test`
-5. Run linter: `npm run lint`
-6. Commit with conventional message: `git commit -m "feat: add feature"`
-7. Push to your fork: `git push origin feat/my-feature`
-8. Open a Pull Request against `main`
-9. Wait for CI checks to pass and review
+4. Run tests and type-check: `npm test && npm run build`
+5. Commit with conventional message: `git commit -m "feat: add feature"`
+6. Push to your fork: `git push origin feat/my-feature`
+7. Open a Pull Request against `main`
+8. Wait for CI checks to pass and review
 
 ### Reporting Issues
 

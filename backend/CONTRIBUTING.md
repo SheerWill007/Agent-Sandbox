@@ -161,20 +161,11 @@ git checkout -b feature/your-feature-name
 - Add tests for new functionality
 - Update documentation as needed
 
-### 3. Run Linter and Formatter
+### 3. Type-check
 
 ```bash
-# Check formatting
-npm run format:check
-
-# Auto-fix formatting
-npm run format
-
-# Lint code
-npm run lint
-
-# Auto-fix linting issues
-npm run lint:fix
+# Compile TypeScript (fails on type errors)
+npm run build
 ```
 
 ### 4. Run Tests
@@ -285,27 +276,8 @@ npm run test:watch
 
 ### Code Formatting
 
-We use **Prettier** for automatic formatting:
-
-```bash
-# Format all files
-npm run format
-
-# Check formatting
-npm run format:check
-```
-
-### Linting
-
-We use **ESLint** with TypeScript support:
-
-```bash
-# Lint all files
-npm run lint
-
-# Auto-fix issues
-npm run lint:fix
-```
+Follow the repository's `.editorconfig` and match the style of the surrounding code.
+There is no separate lint step; `npm run build` must type-check cleanly.
 
 ---
 
@@ -367,12 +339,10 @@ state-based filtering, and error handling.
 ### Before Submitting
 
 1. ✅ **All tests pass** (`npm test`)
-2. ✅ **Code is formatted** (`npm run format`)
-3. ✅ **No linting errors** (`npm run lint`)
-4. ✅ **TypeScript compiles** (`npm run build`)
-5. ✅ **Test coverage is adequate**
-6. ✅ **Documentation is updated**
-7. ✅ **Commit messages follow guidelines**
+2. ✅ **TypeScript compiles** (`npm run build`)
+3. ✅ **Test coverage is adequate**
+4. ✅ **Documentation is updated**
+5. ✅ **Commit messages follow guidelines**
 
 ### PR Title Format
 
@@ -400,7 +370,7 @@ How was this tested?
 
 ## Checklist
 - [ ] Tests pass locally
-- [ ] Code is formatted and linted
+- [ ] `npm run build` type-checks cleanly
 - [ ] Documentation updated
 - [ ] Breaking changes documented
 ```

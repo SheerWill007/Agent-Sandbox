@@ -176,7 +176,7 @@ Run `sudo npm run bench` in the backend directory for full benchmark results.
 ```bash
 cd backend
 
-# Run all tests (200+ tests, 22 suites)
+# Run all tests (148 tests, 22 files)
 npm test
 
 # Run with coverage
@@ -198,7 +198,7 @@ Contributions are welcome! Please read [backend/CONTRIBUTING.md](backend/CONTRIB
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/my-feature`
 3. Make your changes and add tests
-4. Run tests and linter: `npm test && npm run lint`
+4. Run tests and type-check: `npm test && npm run build`
 5. Commit with conventional message: `git commit -m "feat: add feature"`
 6. Push and open a Pull Request
 
