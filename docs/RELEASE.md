@@ -262,12 +262,11 @@ sudo mkdir -p /var/lib/agent-sandbox/artifacts
 sudo chown root:firecracker /var/lib/agent-sandbox/artifacts
 sudo chmod 750 /var/lib/agent-sandbox/artifacts
 
-# Download pre-built kernel
-wget https://github.com/SheerWill007/Agent-Sandbox/releases/download/Beta/vmlinux
-sudo mv vmlinux /var/lib/agent-sandbox/artifacts/
+# Install a guest kernel: copy an uncompressed, Firecracker-compatible vmlinux
+# (see https://github.com/firecracker-microvm/firecracker/blob/main/docs/getting-started.md)
+sudo cp /path/to/vmlinux /var/lib/agent-sandbox/artifacts/vmlinux
 
-# Build environment templates (requires Docker)
-cd ..  # Back to Agent-Sandbox root
+# Build environment templates (requires Docker; run from Agent-Sandbox/backend)
 sudo ./templates/build.sh node
 sudo ./templates/build.sh python
 sudo ./templates/build.sh go
@@ -279,8 +278,8 @@ sudo ls -l /var/lib/agent-sandbox/artifacts/templates/
 #### 8. Create API Key
 
 ```bash
-cd backend
-npm run keys create "production-key"
+# From Agent-Sandbox/backend
+sudo npm run keys -- create production-key
 
 # Save the printed API key (it will not be shown again)
 # Example output: Created API key: sk_test_abc123...
@@ -552,18 +551,17 @@ npm test
 # 5. Run end-to-end tests (requires root, KVM, and Firecracker)
 sudo npm run test:e2e
 
-# 6. Build environment templates
-cd ..
+# 6. Build environment templates (still in backend/)
 sudo ./templates/build.sh node
 sudo ./templates/build.sh python
 sudo ./templates/build.sh go
 
 # 7. Build custom template (optional)
-# Create templates/myenv/Dockerfile, then:
+# Create backend/templates/myenv/Dockerfile, then:
 sudo ./templates/build.sh myenv
 
 # 8. Build SDK (optional)
-cd backend/sdk/typescript
+cd sdk/typescript
 npm install
 npm run build
 npm pack  # Creates agent-sandbox-sdk-1.0.0.tgz
